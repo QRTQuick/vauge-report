@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color _seed = Color(0xFF0B6E4F);
-  static const Color _accent = Color(0xFFEE6C4D);
-  static const Color _surface = Color(0xFFF8F9FB);
-  static const Color _background = Color(0xFFF1F4F7);
-  static const Color _ink = Color(0xFF101828);
+  static const Color _seed = Color(0xFF1A1A1A);
+  static const Color _accent = Color(0xFFFFFFFF);
+  static const Color _surface = Color(0xFF121212);
+  static const Color _background = Color(0xFF000000);
+  static const Color _ink = Color(0xFFFFFFFF);
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
+    brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
       seedColor: _seed,
-      brightness: Brightness.light,
+      brightness: Brightness.dark,
     ).copyWith(
       primary: _seed,
       secondary: _accent,
       surface: _surface,
       background: _background,
       onSurface: _ink,
+      onBackground: _ink,
     ),
     scaffoldBackgroundColor: _background,
     appBarTheme: const AppBarTheme(
@@ -71,10 +73,13 @@ class AppTheme {
       ),
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: Colors.white,
-      selectedColor: _seed.withOpacity(0.12),
-      labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      side: BorderSide(color: Colors.black.withOpacity(0.08)),
+      backgroundColor: const Color(0xFF131313),
+      selectedColor: _seed.withOpacity(0.2),
+      labelStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        color: _ink,
+      ),
+      side: BorderSide(color: Colors.white.withOpacity(0.1)),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),

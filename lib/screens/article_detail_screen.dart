@@ -3,12 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/article.dart';
+import '../services/local_storage_service.dart';
 import '../utils/time_ago.dart';
 
-class ArticleDetailScreen extends StatelessWidget {
+class ArticleDetailScreen extends StatefulWidget {
   const ArticleDetailScreen({super.key, required this.article});
 
   final Article article;
+
+  @override
+  State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
+}
+
+class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Track this article as recently viewed
+    LocalNewsStorage.instance.addToRecentlyViewed(widget.article);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +36,20 @@ class ArticleDetailScreen extends StatelessWidget {
             expandedHeight: 320,
             backgroundColor: theme.colorScheme.surface,
             foregroundColor: theme.colorScheme.onSurface,
+            actions: [
+              ValueListenableBuilder(
+                valueListenable: LocalNewsStorage.instance.savedArticles,
+                builder: (context, saved, child) {
+                  final isSaved = saved.any((item) => item.url == widget.article.url);
+                  return IconButton(
+                    onPressed: () => LocalNewsStorage.instance.toggleSaved(widget.article),
+                    icon: Icon(
+                      isSaved ? Icons.bookmark : Icons.bookmark_border,
+                    ),
+                  );
+                },
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.parallax,
               background: Stack(
@@ -52,7 +79,7 @@ class ArticleDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    article.title,
+                    widget.article.title,
                     style: theme.textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 12),
@@ -60,22 +87,22 @@ class ArticleDetailScreen extends StatelessWidget {
                     spacing: 10,
                     runSpacing: 6,
                     children: [
-                      _MetaChip(label: article.source),
-                      _MetaChip(label: timeAgo(article.publishedAt)),
-                      if (article.author.isNotEmpty)
-                        _MetaChip(label: article.author),
+                      _MetaChip(label: widget.article.source),
+                      _MetaChip(label: timeAgo(widget.article.publishedAt)),
+                      if (widget.article.author.isNotEmpty)
+                        _MetaChip(label: widget.article.author),
                     ],
                   ),
                   const SizedBox(height: 18),
-                  if (article.description.isNotEmpty)
+                  if (widget.article.description.isNotEmpty)
                     Text(
-                      article.description,
+                      widget.article.description,
                       style: theme.textTheme.bodyLarge,
                     ),
-                  if (article.content.isNotEmpty) ...[
+                  if (widget.article.content.isNotEmpty) ...[
                     const SizedBox(height: 14),
                     Text(
-                      article.content,
+                      widget.article.content,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.7),
                       ),
@@ -111,7 +138,7 @@ class ArticleDetailScreen extends StatelessWidget {
   }
 
   Widget _buildHeroImage(ThemeData theme) {
-    if (article.imageUrl.isEmpty) {
+    if (widget.article.imageUrl.isEmpty) {
       return DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -130,9 +157,9 @@ class ArticleDetailScreen extends StatelessWidget {
     }
 
     return Hero(
-      tag: article.url,
+      tag: widget.article.url,
       child: Image.network(
-        article.imageUrl,
+        widget.article.imageUrl,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return DecoratedBox(
@@ -154,7 +181,7 @@ class ArticleDetailScreen extends StatelessWidget {
   }
 
   Future<void> _openUrl(BuildContext context) async {
-    final uri = Uri.tryParse(article.url);
+    final uri = Uri.tryParse(widget.article.url);
     if (uri == null) {
       _showSnack(context, 'Invalid article link.');
       return;
@@ -170,7 +197,7 @@ class ArticleDetailScreen extends StatelessWidget {
   }
 
   Future<void> _copyLink(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: article.url));
+    await Clipboard.setData(ClipboardData(text: widget.article.url));
     if (context.mounted) {
       _showSnack(context, 'Link copied to clipboard.');
     }
@@ -190,15 +217,17 @@ class _MetaChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.06),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelLarge,
+        style: theme.textTheme.labelLarge,
       ),
     );
   }

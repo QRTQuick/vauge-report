@@ -28,6 +28,7 @@ class EmptyState extends StatelessWidget {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withOpacity(0.06)),
               ),
               child: Icon(icon, size: 40, color: theme.colorScheme.primary),
             ),

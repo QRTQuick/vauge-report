@@ -33,6 +33,19 @@ class Article {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'title': title,
+      'description': description,
+      'url': url,
+      'urlToImage': imageUrl,
+      'source': <String, dynamic>{'name': source},
+      'publishedAt': publishedAt?.toIso8601String(),
+      'content': content,
+      'author': author,
+    };
+  }
+
   static DateTime? _parseDate(dynamic value) {
     if (value is String && value.isNotEmpty) {
       return DateTime.tryParse(value);

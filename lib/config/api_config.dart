@@ -1,7 +1,8 @@
-const String newsApiKey = String.fromEnvironment(
-  'NEWS_API_KEY',
-  defaultValue: '92c5b8041b4f4dd798bfc6bd32295704',
+// Apify Ultimate News Scraper API
+const String apifyToken = String.fromEnvironment(
+  'APIFY_TOKEN',
+  defaultValue: 'APIFY_TOKEN_NOT_SET',
 );
-
-const String newsApiBaseUrl = 'https://newsapi.org/v2';
+const String apifyActorId = 'glitch_404~ultimate-news-scraper';
+const String apifyBaseUrl = 'https://api.apify.com/v2';
 const String defaultCountry = 'us';

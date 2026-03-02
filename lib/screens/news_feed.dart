@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 
 import '../models/article.dart';
+import '../services/local_storage_service.dart';
 import '../services/news_api_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/news_card.dart';
 import '../widgets/skeleton_card.dart';
 
 class NewsFeed extends StatefulWidget {
-  const NewsFeed({super.key, required this.category});
+  const NewsFeed({
+    super.key,
+    required this.feedKey,
+    this.category,
+    this.query,
+    this.notifyOnUpdate = false,
+  });
 
-  final String category;
+  final String feedKey;
+  final String? category;
+  final String? query;
+  final bool notifyOnUpdate;
 
   @override
   State<NewsFeed> createState() => _NewsFeedState();
@@ -18,8 +29,8 @@ class NewsFeed extends StatefulWidget {
 class _NewsFeedState extends State<NewsFeed>
     with AutomaticKeepAliveClientMixin {
   final NewsApiService _service = NewsApiService();
-  final List<Article> _articles = [];
 
+  List<Article> _articles = <Article>[];
   bool _isLoading = false;
   bool _hasMore = true;
   int _page = 1;
@@ -36,16 +47,39 @@ class _NewsFeedState extends State<NewsFeed>
 
   Future<void> _loadInitial() async {
     setState(() {
-      _articles.clear();
-      _page = 1;
-      _hasMore = true;
       _error = null;
+      _hasMore = true;
+      _page = 1;
     });
-    await _fetchPage();
+
+    final cached = await LocalNewsStorage.instance.loadFeed(widget.feedKey);
+    if (cached.isNotEmpty && mounted) {
+      setState(() {
+        _articles = List<Article>.from(cached);
+      });
+    }
+
+    await _fetchPage(refresh: true);
   }
 
-  Future<void> _fetchPage() async {
-    if (_isLoading || !_hasMore) {
+  Future<List<Article>> _loadFromApi(int page) {
+    final query = widget.query?.trim();
+    if (query != null && query.isNotEmpty) {
+      return _service.search(query: query, page: page);
+    }
+
+    return _service.fetchTopHeadlines(
+      category: widget.category ?? 'general',
+      page: page,
+    );
+  }
+
+  Future<void> _fetchPage({bool refresh = false}) async {
+    if (_isLoading) {
+      return;
+    }
+
+    if (!refresh && !_hasMore) {
       return;
     }
 
@@ -55,21 +89,31 @@ class _NewsFeedState extends State<NewsFeed>
     });
 
     try {
-      final items = await _service.fetchTopHeadlines(
-        category: widget.category,
-        page: _page,
-      );
+      final page = refresh ? 1 : _page;
+      final items = await _loadFromApi(page);
 
       if (!mounted) return;
 
       setState(() {
-        if (items.isEmpty) {
+        if (refresh) {
+          if (items.isNotEmpty) {
+            _articles = items;
+          }
+          _page = 2;
+          _hasMore = items.isNotEmpty;
+        } else if (items.isEmpty) {
           _hasMore = false;
         } else {
           _page += 1;
           _articles.addAll(items);
         }
       });
+
+      await LocalNewsStorage.instance.cacheFeed(widget.feedKey, _articles);
+
+      if (refresh && widget.notifyOnUpdate && items.isNotEmpty) {
+        await NewsNotificationService.instance.notifyIfNew(items.first);
+      }
     } catch (error) {
       if (!mounted) return;
       setState(() {

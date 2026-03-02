@@ -3,18 +3,30 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../screens/news_feed.dart';
 import '../screens/news_search_delegate.dart';
+import '../screens/saved_articles_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const List<NewsCategory> categories = [
-    NewsCategory('Top', 'general'),
-    NewsCategory('Business', 'business'),
-    NewsCategory('Tech', 'technology'),
-    NewsCategory('Sports', 'sports'),
-    NewsCategory('Entertainment', 'entertainment'),
-    NewsCategory('Health', 'health'),
-    NewsCategory('Science', 'science'),
+  static const List<NewsTab> tabs = [
+    NewsTab(
+      label: 'Home',
+      feedKey: 'home',
+      category: 'general',
+      notifyOnUpdate: true,
+    ),
+    NewsTab(
+      label: 'Viewed',
+      feedKey: 'recently_viewed',
+      query: 'latest',
+      notifyOnUpdate: true,
+    ),
+    NewsTab(
+      label: 'Saved',
+      feedKey: 'saved_articles',
+      query: 'important news',
+      notifyOnUpdate: true,
+    ),
   ];
 
   @override
@@ -22,7 +34,7 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return DefaultTabController(
-      length: categories.length,
+      length: tabs.length,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -34,6 +46,16 @@ class HomeScreen extends StatelessWidget {
                 showSearch(context: context, delegate: NewsSearchDelegate());
               },
               icon: const Icon(Icons.search),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SavedArticlesScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.bookmark_border),
             ),
             IconButton(
               onPressed: () => _showAboutSheet(context),
@@ -56,12 +78,12 @@ class HomeScreen extends StatelessWidget {
                         Text(
                           _greeting(),
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Stay ahead with curated headlines.',
+                          'Stay ahead with current stories.',
                           style: theme.textTheme.headlineLarge,
                         ),
                       ],
@@ -80,15 +102,11 @@ class HomeScreen extends StatelessWidget {
                           vertical: 14,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 14,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.06),
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -97,7 +115,7 @@ class HomeScreen extends StatelessWidget {
                             Text(
                               'Search across breaking news',
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(0.55),
+                                color: theme.colorScheme.onSurface.withOpacity(0.65),
                               ),
                             ),
                           ],
@@ -115,15 +133,20 @@ class HomeScreen extends StatelessWidget {
                     unselectedLabelColor:
                         theme.colorScheme.onSurface.withOpacity(0.6),
                     labelColor: Colors.white,
-                    tabs: categories
-                        .map((category) => Tab(text: category.label))
-                        .toList(),
+                    tabs: tabs.map((tab) => Tab(text: tab.label)).toList(),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
                     child: TabBarView(
-                      children: categories
-                          .map((category) => NewsFeed(category: category.value))
+                      children: tabs
+                          .map(
+                            (tab) => NewsFeed(
+                              feedKey: tab.feedKey,
+                              category: tab.category,
+                              query: tab.query,
+                              notifyOnUpdate: tab.notifyOnUpdate,
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -220,11 +243,20 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class NewsCategory {
+class NewsTab {
   final String label;
-  final String value;
+  final String feedKey;
+  final String? category;
+  final String? query;
+  final bool notifyOnUpdate;
 
-  const NewsCategory(this.label, this.value);
+  const NewsTab({
+    required this.label,
+    required this.feedKey,
+    this.category,
+    this.query,
+    this.notifyOnUpdate = false,
+  });
 }
 
 class _BackgroundDecor extends StatelessWidget {
@@ -241,35 +273,35 @@ class _BackgroundDecor extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                theme.colorScheme.primary.withOpacity(0.08),
-                theme.colorScheme.secondary.withOpacity(0.12),
+                const Color(0xFF050505),
                 theme.colorScheme.surface,
+                const Color(0xFF0A0A0A),
               ],
             ),
           ),
         ),
         Positioned(
-          top: -120,
-          right: -80,
-          child: _BlurCircle(
-            size: 240,
-            color: theme.colorScheme.primary.withOpacity(0.18),
-          ),
-        ),
-        Positioned(
-          top: 180,
-          left: -120,
-          child: _BlurCircle(
-            size: 220,
-            color: theme.colorScheme.secondary.withOpacity(0.2),
-          ),
-        ),
-        Positioned(
-          bottom: -140,
-          right: -80,
+          top: -140,
+          right: -120,
           child: _BlurCircle(
             size: 260,
-            color: theme.colorScheme.primary.withOpacity(0.12),
+            color: theme.colorScheme.primary.withOpacity(0.22),
+          ),
+        ),
+        Positioned(
+          top: 200,
+          left: -120,
+          child: _BlurCircle(
+            size: 240,
+            color: theme.colorScheme.secondary.withOpacity(0.16),
+          ),
+        ),
+        Positioned(
+          bottom: -160,
+          right: -80,
+          child: _BlurCircle(
+            size: 280,
+            color: theme.colorScheme.primary.withOpacity(0.16),
           ),
         ),
       ],

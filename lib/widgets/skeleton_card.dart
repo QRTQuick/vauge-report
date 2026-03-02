@@ -30,8 +30,8 @@ class _SkeletonCardState extends State<SkeletonCard>
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = Colors.black.withOpacity(0.06);
-    final highlightColor = Colors.white.withOpacity(0.6);
+    final baseColor = Colors.white.withOpacity(0.08);
+    final highlightColor = Colors.white.withOpacity(0.4);
 
     return AnimatedBuilder(
       animation: _controller,
