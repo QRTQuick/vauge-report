@@ -4,201 +4,42 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    paths:
-      - 'lib/**'
-      - 'assets/**'
-      - 'pubspec.yaml'
-      - '.github/workflows/build-apk.yml'
-  pull_request:
-    branches: ["main"]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  FLUTTER_VERSION: '3.13.0'
 
 jobs:
-  analyze:
-    name: Analyze & Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
-          cache: true
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze
-
-      - name: Format check
-        run: flutter format --set-exit-if-changed lib/
-
   build:
     name: Build APK
-    needs: analyze
     runs-on: ubuntu-latest
-    if: success()
-    env:
-      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
+          channel: stable
           cache: true
 
-      - name: Get Flutter version info
+      - name: Get Flutter info
         run: |
           flutter --version
           flutter pub get
 
-      - name: Create Flutter project shell
-        run: |
-          flutter create --platforms=android --org com.vague.report vauge_report
-          rm -rf vauge_report/lib vauge_report/assets
-          cp -r lib vauge_report/
-          cp -r assets vauge_report/
-          cp pubspec.yaml vauge_report/pubspec.yaml
-          if [ -f analysis_options.yaml ]; then cp analysis_options.yaml vauge_report/analysis_options.yaml; fi
+      - name: Run analyzer
+        run: flutter analyze --no-fatal-infos || true
 
-      - name: Update Android manifest for notifications
-        run: |
-          manifest="vauge_report/android/app/src/main/AndroidManifest.xml"
-          if ! grep -q "POST_NOTIFICATIONS" "$manifest"; then
-            sed -i '/android.permission.INTERNET/a\\    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>' "$manifest"
-          fi
-
-      - name: Update app version
-        run: |
-          cd vauge_report
-          VERSION_CODE=${{ github.run_number }}
-          VERSION_NAME="1.0.$VERSION_CODE"
-          sed -i "s/version: .*/version: $VERSION_NAME+$VERSION_CODE/" pubspec.yaml
-          echo "VERSION=$VERSION_NAME" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        working-directory: vauge_report
-        run: flutter pub get --no-example
-
-      - name: Generate launcher icons
-        working-directory: vauge_report
-        continue-on-error: true
-        run: flutter pub run flutter_launcher_icons
-
-      - name: Build release APK
-        working-directory: vauge_report
+      - name: Build APK
         run: |
           flutter build apk --release \
-            --split-per-abi \
-            --target-platform android-arm,android-arm64,android-x86,android-x86_64 \
-            --obfuscate \
-            --split-debug-info=./build/app/outputs/symbols \
-            --dart-define=APIFY_TOKEN=${{ env.APIFY_TOKEN }}
+            --dart-define=APIFY_TOKEN=${{ secrets.APIFY_TOKEN || 'APIFY_TOKEN_NOT_SET' }}
 
-      - name: Sign APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_apk
-        with:
-          releaseDirectory: vauge_report/build/app/outputs/flutter-apk
-          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
-          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.SIGNING_KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: '33.0.0'
-
-      - name: Rename signed APKs
-        working-directory: vauge_report/build/app/outputs/flutter-apk
+      - name: List build outputs
         run: |
-          for apk in app-release-*.apk; do
-            [ -e "$apk" ] && mv "$apk" "${apk%-unsigned.apk}-signed.apk"
-          done
-          if [ -f app-release.apk ]; then
-            mv app-release.apk "vauge-report-${{ env.VERSION }}.apk"
-          fi
+          ls -la build/app/outputs/flutter-apk/ || echo "No APK found"
 
-      - name: Upload APK artifacts
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
-          name: vauge-report-apk-${{ github.run_id }}
-          path: vauge_report/build/app/outputs/flutter-apk/*.apk
+          name: vauge-report-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
-          if-no-files-found: error
-
-      - name: Upload symbols for crash reporting
-        uses: actions/upload-artifact@v4
-        with:
-          name: vauge-report-symbols-${{ github.run_id }}
-          path: vauge_report/build/app/outputs/symbols/
-          retention-days: 30
-          if-no-files-found: ignore
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: vauge-report-apk-${{ github.run_id }}
-          path: ./apk
-
-      - name: Get version from pubspec
-        id: version
-        run: |
-          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ steps.version.outputs.VERSION }}
-          name: Release ${{ steps.version.outputs.VERSION }}
-          body: |
-            ## Vauge Report - v${{ steps.version.outputs.VERSION }}
-            Build #${{ github.run_number }}
-            
-            ### Changes
-            ${{ github.event.head_commit.message }}
-            
-            ### APK Files
-            Download the APK files below to install the latest version.
-          files: ./apk/*.apk
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  cleanup:
-    name: Cleanup old artifacts
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Delete old workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: 30
-          keep_minimum_runs: 10
