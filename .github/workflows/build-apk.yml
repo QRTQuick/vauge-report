@@ -24,6 +24,17 @@ jobs:
           flutter --version
           flutter pub get
 
+      - name: Clean previous builds
+        run: flutter clean
+
+      - name: Regenerate Android app
+        run: |
+          rm -rf android/
+          flutter create . --platforms android --org com.vauge.report --project-name vauge_report
+
+      - name: Get dependencies after regeneration
+        run: flutter pub get
+
       - name: Run analyzer
         run: flutter analyze --no-fatal-infos || true
 
