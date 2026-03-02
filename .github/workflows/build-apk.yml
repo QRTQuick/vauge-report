@@ -1,0 +1,55 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Create Flutter project shell
+        run: |
+          flutter --version
+          flutter create --platforms=android --org com.vague.report vauge_report
+          rm -rf vauge_report/lib
+          cp -r lib vauge_report/
+          cp -r assets vauge_report/
+          cp pubspec.yaml vauge_report/pubspec.yaml
+          if [ -f analysis_options.yaml ]; then cp analysis_options.yaml vauge_report/analysis_options.yaml; fi
+
+      - name: Install dependencies
+        working-directory: vauge_report
+        run: flutter pub get
+
+      - name: Generate launcher icons
+        working-directory: vauge_report
+        run: flutter pub run flutter_launcher_icons
+
+      - name: Build release APK
+        working-directory: vauge_report
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+        run: |
+          ARGS=""
+          if [ -n "$NEWS_API_KEY" ]; then
+            ARGS="--dart-define=NEWS_API_KEY=$NEWS_API_KEY"
+          fi
+          flutter build apk --release $ARGS
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: vauge-report-apk
+          path: vauge_report/build/app/outputs/flutter-apk/app-release.apk
