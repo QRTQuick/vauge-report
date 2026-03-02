@@ -32,6 +32,58 @@ jobs:
           rm -rf android/
           flutter create . --platforms android --org com.vauge.report --project-name vauge_report
 
+      - name: Enable core library desugaring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("android/app/build.gradle")
+          text = path.read_text()
+          original = text
+
+          if "coreLibraryDesugaringEnabled" not in text:
+              m = re.search(r"compileOptions\s*\{\s*", text)
+              if m:
+                  line_start = text.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", text[line_start:m.start()]).group(0)
+                  inner_indent = indent + "    "
+                  insertion = f"\n{inner_indent}coreLibraryDesugaringEnabled true\n"
+                  text = text[:m.end()] + insertion + text[m.end():]
+              else:
+                  m = re.search(r"android\s*\{\s*", text)
+                  if m:
+                      line_start = text.rfind("\n", 0, m.start()) + 1
+                      indent = re.match(r"\s*", text[line_start:m.start()]).group(0)
+                      inner_indent = indent + "    "
+                      block = (
+                          f"\n{inner_indent}compileOptions {{\n"
+                          f"{inner_indent}    sourceCompatibility JavaVersion.VERSION_1_8\n"
+                          f"{inner_indent}    targetCompatibility JavaVersion.VERSION_1_8\n"
+                          f"{inner_indent}    coreLibraryDesugaringEnabled true\n"
+                          f"{inner_indent}}}\n"
+                      )
+                      text = text[:m.end()] + block + text[m.end():]
+
+          if "coreLibraryDesugaring" not in text:
+              m = re.search(r"dependencies\s*\{\s*", text)
+              if m:
+                  line_start = text.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", text[line_start:m.start()]).group(0)
+                  inner_indent = indent + "    "
+                  insertion = (
+                      f"\n{inner_indent}coreLibraryDesugaring "
+                      f"'com.android.tools:desugar_jdk_libs:2.0.4'\n"
+                  )
+                  text = text[:m.end()] + insertion + text[m.end():]
+
+          if text != original:
+              path.write_text(text)
+              print("Updated android/app/build.gradle for core library desugaring.")
+          else:
+              print("No changes needed for core library desugaring.")
+          PY
+
       - name: Get dependencies after regeneration
         run: flutter pub get
 
