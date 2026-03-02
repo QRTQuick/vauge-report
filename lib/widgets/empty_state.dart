@@ -29,7 +29,7 @@ class EmptyState extends StatelessWidget {
                 color: theme.colorScheme.surface,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: (0.06 * 255).round()),
+                  color: Colors.white.withValues(alpha: 0.06),
                 ),
               ),
               child: Icon(icon, size: 40, color: theme.colorScheme.primary),
@@ -45,7 +45,7 @@ class EmptyState extends StatelessWidget {
               subtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface
-                    .withValues(alpha: (0.6 * 255).round()),
+                    .withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
             ),
@@ -63,3 +63,4 @@ class EmptyState extends StatelessWidget {
     );
   }
 }
+

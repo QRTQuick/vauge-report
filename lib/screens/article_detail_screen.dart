@@ -105,7 +105,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       widget.article.content,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface
-                            .withValues(alpha: (0.7 * 255).round()),
+                            .withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -146,8 +146,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              theme.colorScheme.primary.withValues(alpha: (0.7 * 255).round()),
-              theme.colorScheme.secondary.withValues(alpha: (0.7 * 255).round()),
+              theme.colorScheme.primary.withValues(alpha: 0.7),
+              theme.colorScheme.secondary.withValues(alpha: 0.7),
             ],
           ),
         ),
@@ -167,9 +167,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.colorScheme.primary.withValues(alpha: (0.7 * 255).round()),
+                  theme.colorScheme.primary.withValues(alpha: 0.7),
                   theme.colorScheme.secondary
-                      .withValues(alpha: (0.7 * 255).round()),
+                      .withValues(alpha: 0.7),
                 ],
               ),
             ),
@@ -226,7 +226,7 @@ class _MetaChip extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: Colors.white.withValues(alpha: (0.08 * 255).round()),
+          color: Colors.white.withValues(alpha: 0.08),
         ),
       ),
       child: Text(
@@ -236,3 +236,4 @@ class _MetaChip extends StatelessWidget {
     );
   }
 }
+

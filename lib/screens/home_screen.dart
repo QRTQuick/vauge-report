@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                           _greeting(),
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: theme.colorScheme.onSurface
-                                .withValues(alpha: (0.7 * 255).round()),
+                                .withValues(alpha: 0.7),
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
                             color: Colors.white.withValues(
-                              alpha: (0.06 * 255).round(),
+                              alpha: 0.06,
                             ),
                           ),
                         ),
@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                               'Search across breaking news',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface
-                                    .withValues(alpha: (0.65 * 255).round()),
+                                    .withValues(alpha: 0.65),
                               ),
                             ),
                           ],
@@ -136,7 +136,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     unselectedLabelColor:
                         theme.colorScheme.onSurface
-                            .withValues(alpha: (0.6 * 255).round()),
+                            .withValues(alpha: 0.6),
                     labelColor: Colors.white,
                     tabs: tabs.map((tab) => Tab(text: tab.label)).toList(),
                   ),
@@ -291,7 +291,7 @@ class _BackgroundDecor extends StatelessWidget {
           child: _BlurCircle(
             size: 260,
             color: theme.colorScheme.primary
-                .withValues(alpha: (0.22 * 255).round()),
+                .withValues(alpha: 0.22),
           ),
         ),
         Positioned(
@@ -300,7 +300,7 @@ class _BackgroundDecor extends StatelessWidget {
           child: _BlurCircle(
             size: 240,
             color: theme.colorScheme.secondary
-                .withValues(alpha: (0.16 * 255).round()),
+                .withValues(alpha: 0.16),
           ),
         ),
         Positioned(
@@ -309,7 +309,7 @@ class _BackgroundDecor extends StatelessWidget {
           child: _BlurCircle(
             size: 280,
             color: theme.colorScheme.primary
-                .withValues(alpha: (0.16 * 255).round()),
+                .withValues(alpha: 0.16),
           ),
         ),
       ],
@@ -333,10 +333,11 @@ class _BlurCircle extends StatelessWidget {
         gradient: RadialGradient(
           colors: [
             color,
-            color.withValues(alpha: 0),
+            color.withValues(alpha: 0.0),
           ],
         ),
       ),
     );
   }
 }
+

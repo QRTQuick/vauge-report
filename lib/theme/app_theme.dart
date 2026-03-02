@@ -72,13 +72,13 @@ class AppTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFF131313),
-      selectedColor: _seed.withValues(alpha: (0.2 * 255).round()),
+      selectedColor: _seed.withValues(alpha: 0.2),
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         color: _ink,
       ),
       side: BorderSide(
-        color: Colors.white.withValues(alpha: (0.1 * 255).round()),
+        color: Colors.white.withValues(alpha: 0.1),
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -99,7 +99,7 @@ class AppTheme {
         foregroundColor: _ink,
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         side: BorderSide(
-          color: _ink.withValues(alpha: (0.12 * 255).round()),
+          color: _ink.withValues(alpha: 0.12),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
@@ -108,3 +108,4 @@ class AppTheme {
     ),
   );
 }
+

@@ -39,8 +39,7 @@ class SavedArticlesScreen extends StatelessWidget {
         child: Text(
           'Saved stories are cached on this device.',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color:
-                theme.colorScheme.onSurface.withValues(alpha: (0.6 * 255).round()),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           textAlign: TextAlign.center,
         ),
@@ -48,3 +47,4 @@ class SavedArticlesScreen extends StatelessWidget {
     );
   }
 }
+

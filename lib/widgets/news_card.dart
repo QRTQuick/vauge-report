@@ -41,7 +41,7 @@ class NewsCard extends StatelessWidget {
               borderRadius: radius,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: (0.08 * 255).round()),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 18,
                   offset: const Offset(0, 12),
                 ),
@@ -59,9 +59,9 @@ class NewsCard extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black.withValues(alpha: (0.05 * 255).round()),
-                            Colors.black.withValues(alpha: (0.45 * 255).round()),
-                            Colors.black.withValues(alpha: (0.75 * 255).round()),
+                            Colors.black.withValues(alpha: 0.05),
+                            Colors.black.withValues(alpha: 0.45),
+                            Colors.black.withValues(alpha: 0.75),
                           ],
                         ),
                       ),
@@ -99,8 +99,7 @@ class NewsCard extends StatelessWidget {
                             maxLines: featured ? 3 : 2,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color:
-                                  Colors.white.withValues(alpha: (0.88 * 255).round()),
+                              color: Colors.white.withValues(alpha: 0.88),
                             ),
                           ),
                         ],
@@ -127,8 +126,8 @@ class NewsCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                theme.colorScheme.primary.withValues(alpha: (0.5 * 255).round()),
-                theme.colorScheme.secondary.withValues(alpha: (0.45 * 255).round()),
+                theme.colorScheme.primary.withValues(alpha: 0.5),
+                theme.colorScheme.secondary.withValues(alpha: 0.45),
               ],
             ),
           ),
@@ -155,8 +154,8 @@ class NewsCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    theme.colorScheme.primary.withValues(alpha: (0.4 * 255).round()),
-                    theme.colorScheme.secondary.withValues(alpha: (0.3 * 255).round()),
+                    theme.colorScheme.primary.withValues(alpha: 0.4),
+                    theme.colorScheme.secondary.withValues(alpha: 0.3),
                   ],
                 ),
               ),
@@ -173,8 +172,8 @@ class NewsCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    theme.colorScheme.primary.withValues(alpha: (0.4 * 255).round()),
-                    theme.colorScheme.secondary.withValues(alpha: (0.3 * 255).round()),
+                    theme.colorScheme.primary.withValues(alpha: 0.4),
+                    theme.colorScheme.secondary.withValues(alpha: 0.3),
                   ],
                 ),
               ),
@@ -199,10 +198,10 @@ class _InfoPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: (0.18 * 255).round()),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: Colors.white.withValues(alpha: (0.25 * 255).round()),
+          color: Colors.white.withValues(alpha: 0.25),
         ),
       ),
       child: Text(
@@ -216,3 +215,4 @@ class _InfoPill extends StatelessWidget {
     );
   }
 }
+
