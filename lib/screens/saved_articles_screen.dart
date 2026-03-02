@@ -15,7 +15,7 @@ class SavedArticlesScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Saved'),
       ),
-      body: ValueListenableBuilder<List<Article>>(
+      body: ValueListenableBuilder(
         valueListenable: LocalNewsStorage.instance.savedArticles,
         builder: (context, saved, child) {
           if (saved.isEmpty) {

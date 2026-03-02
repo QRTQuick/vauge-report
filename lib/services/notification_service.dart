@@ -76,7 +76,6 @@ class NewsNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       styleInformation: BigTextStyleInformation(body),
-      color: const Color.fromARGB(255, 26, 26, 26),
       playSound: true,
       enableLights: true,
       enableVibration: true,
