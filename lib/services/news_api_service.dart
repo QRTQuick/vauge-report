@@ -119,7 +119,7 @@ class NewsApiService {
       }
 
       // Wait before polling again
-      await Future.delayed(Duration(seconds: _pollInterval));
+      await Future.delayed(const Duration(seconds: _pollInterval));
     }
   }
 

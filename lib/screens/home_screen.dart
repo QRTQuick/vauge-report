@@ -235,7 +235,7 @@ class HomeScreen extends StatelessWidget {
     String errorMessage,
   ) async {
     final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!success) {
+    if (!success && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );

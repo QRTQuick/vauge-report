@@ -17,9 +17,7 @@ class AppTheme {
       primary: _seed,
       secondary: _accent,
       surface: _surface,
-      background: _background,
       onSurface: _ink,
-      onBackground: _ink,
     ),
     scaffoldBackgroundColor: _background,
     appBarTheme: const AppBarTheme(

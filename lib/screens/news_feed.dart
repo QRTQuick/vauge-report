@@ -115,15 +115,17 @@ class _NewsFeedState extends State<NewsFeed>
         await NewsNotificationService.instance.notifyIfNew(items.first);
       }
     } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _error = error.toString();
-      });
+      if (mounted) {
+        setState(() {
+          _error = error.toString();
+        });
+      }
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

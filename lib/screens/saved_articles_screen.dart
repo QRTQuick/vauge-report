@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/article.dart';
 import '../services/local_storage_service.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/news_card.dart';
