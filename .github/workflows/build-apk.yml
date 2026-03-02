@@ -38,50 +38,112 @@ jobs:
           from pathlib import Path
           import re
 
-          path = Path("android/app/build.gradle")
+          gradle_groovy = Path("android/app/build.gradle")
+          gradle_kts = Path("android/app/build.gradle.kts")
+          if gradle_groovy.exists():
+              path = gradle_groovy
+              is_kts = False
+          elif gradle_kts.exists():
+              path = gradle_kts
+              is_kts = True
+          else:
+              raise FileNotFoundError("android/app/build.gradle(.kts) not found")
+
           text = path.read_text()
           original = text
 
-          if "coreLibraryDesugaringEnabled" not in text:
-              m = re.search(r"compileOptions\s*\{\s*", text)
+          def add_compile_options_groovy(t: str) -> str:
+              if "coreLibraryDesugaringEnabled" in t:
+                  return t
+              m = re.search(r"compileOptions\s*\{\s*", t)
               if m:
-                  line_start = text.rfind("\n", 0, m.start()) + 1
-                  indent = re.match(r"\s*", text[line_start:m.start()]).group(0)
+                  line_start = t.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", t[line_start:m.start()]).group(0)
                   inner_indent = indent + "    "
                   insertion = f"\n{inner_indent}coreLibraryDesugaringEnabled true\n"
-                  text = text[:m.end()] + insertion + text[m.end():]
-              else:
-                  m = re.search(r"android\s*\{\s*", text)
-                  if m:
-                      line_start = text.rfind("\n", 0, m.start()) + 1
-                      indent = re.match(r"\s*", text[line_start:m.start()]).group(0)
-                      inner_indent = indent + "    "
-                      block = (
-                          f"\n{inner_indent}compileOptions {{\n"
-                          f"{inner_indent}    sourceCompatibility JavaVersion.VERSION_1_8\n"
-                          f"{inner_indent}    targetCompatibility JavaVersion.VERSION_1_8\n"
-                          f"{inner_indent}    coreLibraryDesugaringEnabled true\n"
-                          f"{inner_indent}}}\n"
-                      )
-                      text = text[:m.end()] + block + text[m.end():]
-
-          if "coreLibraryDesugaring" not in text:
-              m = re.search(r"dependencies\s*\{\s*", text)
+                  return t[:m.end()] + insertion + t[m.end():]
+              m = re.search(r"android\s*\{\s*", t)
               if m:
-                  line_start = text.rfind("\n", 0, m.start()) + 1
-                  indent = re.match(r"\s*", text[line_start:m.start()]).group(0)
+                  line_start = t.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", t[line_start:m.start()]).group(0)
+                  inner_indent = indent + "    "
+                  block = (
+                      f"\n{inner_indent}compileOptions {{\n"
+                      f"{inner_indent}    sourceCompatibility JavaVersion.VERSION_1_8\n"
+                      f"{inner_indent}    targetCompatibility JavaVersion.VERSION_1_8\n"
+                      f"{inner_indent}    coreLibraryDesugaringEnabled true\n"
+                      f"{inner_indent}}}\n"
+                  )
+                  return t[:m.end()] + block + t[m.end():]
+              return t
+
+          def add_compile_options_kts(t: str) -> str:
+              if "coreLibraryDesugaringEnabled" in t:
+                  return t
+              m = re.search(r"compileOptions\s*\{\s*", t)
+              if m:
+                  line_start = t.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", t[line_start:m.start()]).group(0)
+                  inner_indent = indent + "    "
+                  insertion = f"\n{inner_indent}isCoreLibraryDesugaringEnabled = true\n"
+                  return t[:m.end()] + insertion + t[m.end():]
+              m = re.search(r"android\s*\{\s*", t)
+              if m:
+                  line_start = t.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", t[line_start:m.start()]).group(0)
+                  inner_indent = indent + "    "
+                  block = (
+                      f"\n{inner_indent}compileOptions {{\n"
+                      f"{inner_indent}    sourceCompatibility = JavaVersion.VERSION_1_8\n"
+                      f"{inner_indent}    targetCompatibility = JavaVersion.VERSION_1_8\n"
+                      f"{inner_indent}    isCoreLibraryDesugaringEnabled = true\n"
+                      f"{inner_indent}}}\n"
+                  )
+                  return t[:m.end()] + block + t[m.end():]
+              return t
+
+          def add_dependency_groovy(t: str) -> str:
+              if "coreLibraryDesugaring" in t:
+                  return t
+              m = re.search(r"dependencies\s*\{\s*", t)
+              if m:
+                  line_start = t.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", t[line_start:m.start()]).group(0)
                   inner_indent = indent + "    "
                   insertion = (
                       f"\n{inner_indent}coreLibraryDesugaring "
                       f"'com.android.tools:desugar_jdk_libs:2.0.4'\n"
                   )
-                  text = text[:m.end()] + insertion + text[m.end():]
+                  return t[:m.end()] + insertion + t[m.end():]
+              return t
+
+          def add_dependency_kts(t: str) -> str:
+              if "coreLibraryDesugaring" in t:
+                  return t
+              m = re.search(r"dependencies\s*\{\s*", t)
+              if m:
+                  line_start = t.rfind("\n", 0, m.start()) + 1
+                  indent = re.match(r"\s*", t[line_start:m.start()]).group(0)
+                  inner_indent = indent + "    "
+                  insertion = (
+                      f"\n{inner_indent}coreLibraryDesugaring("
+                      f"\"com.android.tools:desugar_jdk_libs:2.0.4\")\n"
+                  )
+                  return t[:m.end()] + insertion + t[m.end():]
+              return t
+
+          if is_kts:
+              text = add_compile_options_kts(text)
+              text = add_dependency_kts(text)
+          else:
+              text = add_compile_options_groovy(text)
+              text = add_dependency_groovy(text)
 
           if text != original:
               path.write_text(text)
-              print("Updated android/app/build.gradle for core library desugaring.")
+              print(f"Updated {path} for core library desugaring.")
           else:
-              print("No changes needed for core library desugaring.")
+              print(f"No changes needed for {path}.")
           PY
 
       - name: Get dependencies after regeneration
