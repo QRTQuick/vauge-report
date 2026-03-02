@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../models/article.dart';
 import '../services/local_storage_service.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/news_card.dart';
@@ -40,7 +39,8 @@ class SavedArticlesScreen extends StatelessWidget {
         child: Text(
           'Saved stories are cached on this device.',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color:
+                theme.colorScheme.onSurface.withValues(alpha: (0.6 * 255).round()),
           ),
           textAlign: TextAlign.center,
         ),

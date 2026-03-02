@@ -72,12 +72,14 @@ class AppTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFF131313),
-      selectedColor: _seed.withOpacity(0.2),
+      selectedColor: _seed.withValues(alpha: (0.2 * 255).round()),
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         color: _ink,
       ),
-      side: BorderSide(color: Colors.white.withOpacity(0.1)),
+      side: BorderSide(
+        color: Colors.white.withValues(alpha: (0.1 * 255).round()),
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -96,7 +98,9 @@ class AppTheme {
       style: OutlinedButton.styleFrom(
         foregroundColor: _ink,
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        side: BorderSide(color: _ink.withOpacity(0.12)),
+        side: BorderSide(
+          color: _ink.withValues(alpha: (0.12 * 255).round()),
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),

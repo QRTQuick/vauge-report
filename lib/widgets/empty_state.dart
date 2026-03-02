@@ -28,7 +28,9 @@ class EmptyState extends StatelessWidget {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withOpacity(0.06)),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: (0.06 * 255).round()),
+                ),
               ),
               child: Icon(icon, size: 40, color: theme.colorScheme.primary),
             ),
@@ -42,7 +44,8 @@ class EmptyState extends StatelessWidget {
             Text(
               subtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: (0.6 * 255).round()),
               ),
               textAlign: TextAlign.center,
             ),
