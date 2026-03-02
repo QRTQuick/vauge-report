@@ -103,7 +103,7 @@ jobs:
               return t
 
           def add_dependency_groovy(t: str) -> str:
-              if "coreLibraryDesugaring" in t:
+              if re.search(r"coreLibraryDesugaring\\s+['\\\"]", t):
                   return t
               m = re.search(r"dependencies\s*\{\s*", t)
               if m:
@@ -115,10 +115,16 @@ jobs:
                       f"'com.android.tools:desugar_jdk_libs:2.0.4'\n"
                   )
                   return t[:m.end()] + insertion + t[m.end():]
-              return t
+              block = (
+                  "\n\ndependencies {\n"
+                  "    coreLibraryDesugaring "
+                  "'com.android.tools:desugar_jdk_libs:2.0.4'\n"
+                  "}\n"
+              )
+              return t + block
 
           def add_dependency_kts(t: str) -> str:
-              if "coreLibraryDesugaring" in t:
+              if re.search(r"coreLibraryDesugaring\\s*\\(", t):
                   return t
               m = re.search(r"dependencies\s*\{\s*", t)
               if m:
@@ -130,7 +136,13 @@ jobs:
                       f"\"com.android.tools:desugar_jdk_libs:2.0.4\")\n"
                   )
                   return t[:m.end()] + insertion + t[m.end():]
-              return t
+              block = (
+                  "\n\ndependencies {\n"
+                  "    coreLibraryDesugaring("
+                  "\"com.android.tools:desugar_jdk_libs:2.0.4\")\n"
+                  "}\n"
+              )
+              return t + block
 
           if is_kts:
               text = add_compile_options_kts(text)
