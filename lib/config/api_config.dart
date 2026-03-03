@@ -1,9 +1,10 @@
-// Apify Ultimate News Scraper API
-// Provide APIFY_TOKEN at build time: --dart-define=APIFY_TOKEN=your_token
-const String apifyToken = String.fromEnvironment(
-  'APIFY_TOKEN',
-  defaultValue: 'APIFY_TOKEN_NOT_SET',
+// GNews API
+// Provide GNEWS_API_KEY at build time: --dart-define=GNEWS_API_KEY=your_key
+const String gnewsApiKey = String.fromEnvironment(
+  'GNEWS_API_KEY',
+  defaultValue: 'GNEWS_API_KEY_NOT_SET',
 );
-const String apifyActorId = 'glitch_404~ultimate-news-scraper';
-const String apifyBaseUrl = 'https://api.apify.com/v2';
+const String gnewsBaseUrl = 'https://gnews.io/api/v4';
 const String defaultCountry = 'us';
+const String defaultLanguage = 'en';
+const int defaultMaxResults = 10;

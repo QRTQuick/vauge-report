@@ -8,16 +8,16 @@ Contact: chisomlifeeke@gmail.com
 GitHub: https://github.com/QRTQuick
 
 ## API key
-The app reads the Apify token from a build-time define:
+The app reads the GNews API key from a build-time define:
 
 ```
---dart-define=APIFY_TOKEN=your_token_here
+--dart-define=GNEWS_API_KEY=your_key_here
 ```
 
-If you do not set a token, the default placeholder in `lib/config/api_config.dart` is used and the app will show a missing token error.
+If you do not set a key, the default placeholder in `lib/config/api_config.dart` is used and the app will show a missing key error.
 
 ## Notifications & caching
 The app caches feeds and saved stories on-device. A local notification is sent when a new headline appears on the Home feed. On Android 13+, the app requests notification permission at runtime.
 
 ## GitHub Actions APK
-The workflow `build-apk.yml` creates a fresh Flutter project on the runner, injects the app source, and builds a release APK. Add `APIFY_TOKEN` as a GitHub Secret to avoid hardcoding keys in CI logs.
+The workflow `build-apk.yml` creates a fresh Flutter project on the runner, injects the app source, and builds a release APK. Add `GNEWS_API_KEY` as a GitHub Secret to avoid hardcoding keys in CI logs.

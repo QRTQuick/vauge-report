@@ -175,10 +175,10 @@ jobs:
 
       - name: Build APK
         env:
-          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          GNEWS_API_KEY: ${{ secrets.GNEWS_API_KEY }}
         run: |
           flutter build apk --release \
-            --dart-define=APIFY_TOKEN=$APIFY_TOKEN
+            --dart-define=GNEWS_API_KEY=$GNEWS_API_KEY
 
       - name: List build outputs
         run: |
