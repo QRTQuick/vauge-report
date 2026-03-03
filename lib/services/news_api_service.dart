@@ -42,8 +42,10 @@ class NewsApiService {
   }
 
   Future<List<Article>> _scrapeNews(String query, int pageSize) async {
-    if (apifyToken.trim().isEmpty) {
-      throw Exception('Missing Apify token.');
+    if (apifyToken.trim().isEmpty || apifyToken == 'APIFY_TOKEN_NOT_SET') {
+      throw Exception(
+        'Missing Apify token. Set APIFY_TOKEN with --dart-define.',
+      );
     }
 
     try {

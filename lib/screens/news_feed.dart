@@ -15,12 +15,14 @@ class NewsFeed extends StatefulWidget {
     this.category,
     this.query,
     this.notifyOnUpdate = false,
+    this.onUpdated,
   });
 
   final String feedKey;
   final String? category;
   final String? query;
   final bool notifyOnUpdate;
+  final ValueChanged<DateTime>? onUpdated;
 
   @override
   State<NewsFeed> createState() => _NewsFeedState();
@@ -110,6 +112,10 @@ class _NewsFeedState extends State<NewsFeed>
       });
 
       await LocalNewsStorage.instance.cacheFeed(widget.feedKey, _articles);
+
+      if (refresh) {
+        widget.onUpdated?.call(DateTime.now());
+      }
 
       if (refresh && widget.notifyOnUpdate && items.isNotEmpty) {
         await NewsNotificationService.instance.notifyIfNew(items.first);

@@ -16,7 +16,7 @@ class LocalNewsStorage {
   static const int _maxCacheItems = 40;
   static const int _maxRecentlyViewed = 50;
 
-  late final SharedPreferences _prefs;
+  late final SharedPreferencesWithCache _prefs;
   final Map<String, List<Article>> _feedCache = {};
   final ValueNotifier<List<Article>> savedArticles =
       ValueNotifier<List<Article>>(<Article>[]);
@@ -24,7 +24,7 @@ class LocalNewsStorage {
       ValueNotifier<List<Article>>(<Article>[]);
 
   Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
+    _prefs = await SharedPreferencesWithCache.create();
     await _loadSaved();
     await _loadRecentlyViewed();
   }

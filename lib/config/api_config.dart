@@ -1,4 +1,5 @@
 // Apify Ultimate News Scraper API
+// Provide APIFY_TOKEN at build time: --dart-define=APIFY_TOKEN=your_token
 const String apifyToken = String.fromEnvironment(
   'APIFY_TOKEN',
   defaultValue: 'APIFY_TOKEN_NOT_SET',

@@ -16,6 +16,7 @@ class NewsNotificationService {
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+  SharedPreferencesWithCache? _prefs;
   bool _initialized = false;
   bool _notificationsEnabled = true;
 
@@ -27,7 +28,7 @@ class NewsNotificationService {
     _initialized = true;
 
     // Load notification preference
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefs();
     _notificationsEnabled = prefs.getBool(_notificationEnabledKey) ?? true;
 
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
@@ -59,7 +60,7 @@ class NewsNotificationService {
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefs();
     final lastUrl = prefs.getString(_lastNotifiedKey);
     if (lastUrl == article.url) {
       return;
@@ -95,9 +96,13 @@ class NewsNotificationService {
 
   Future<void> setNotificationsEnabled(bool enabled) async {
     _notificationsEnabled = enabled;
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _ensurePrefs();
     await prefs.setBool(_notificationEnabledKey, enabled);
   }
 
   bool get notificationsEnabled => _notificationsEnabled;
+
+  Future<SharedPreferencesWithCache> _ensurePrefs() async {
+    return _prefs ??= await SharedPreferencesWithCache.create();
+  }
 }

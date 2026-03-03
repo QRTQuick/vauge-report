@@ -13,6 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -161,13 +167,18 @@ jobs:
       - name: Get dependencies after regeneration
         run: flutter pub get
 
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
+
       - name: Run analyzer
         run: flutter analyze --no-fatal-infos || true
 
       - name: Build APK
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: |
           flutter build apk --release \
-            --dart-define=APIFY_TOKEN=${{ secrets.APIFY_TOKEN || 'APIFY_TOKEN_NOT_SET' }}
+            --dart-define=APIFY_TOKEN=$APIFY_TOKEN
 
       - name: List build outputs
         run: |
