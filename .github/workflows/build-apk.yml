@@ -109,7 +109,7 @@ jobs:
               return t
 
           def add_dependency_groovy(t: str) -> str:
-              if re.search(r"coreLibraryDesugaring\\s+['\\\"]", t):
+              if re.search(r"coreLibraryDesugaring\s+['\"]", t):
                   return t
               m = re.search(r"dependencies\s*\{\s*", t)
               if m:
@@ -130,7 +130,7 @@ jobs:
               return t + block
 
           def add_dependency_kts(t: str) -> str:
-              if re.search(r"coreLibraryDesugaring\\s*\\(", t):
+              if re.search(r"coreLibraryDesugaring\s*\(", t):
                   return t
               m = re.search(r"dependencies\s*\{\s*", t)
               if m:
