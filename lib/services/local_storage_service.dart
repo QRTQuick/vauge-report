@@ -24,7 +24,9 @@ class LocalNewsStorage {
       ValueNotifier<List<Article>>(<Article>[]);
 
   Future<void> init() async {
-    _prefs = await SharedPreferencesWithCache.create();
+    _prefs = await SharedPreferencesWithCache.create(
+      cacheOptions: const SharedPreferencesWithCacheOptions(),
+    );
     await _loadSaved();
     await _loadRecentlyViewed();
   }

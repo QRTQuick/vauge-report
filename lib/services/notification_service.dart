@@ -103,6 +103,8 @@ class NewsNotificationService {
   bool get notificationsEnabled => _notificationsEnabled;
 
   Future<SharedPreferencesWithCache> _ensurePrefs() async {
-    return _prefs ??= await SharedPreferencesWithCache.create();
+    return _prefs ??= await SharedPreferencesWithCache.create(
+      cacheOptions: const SharedPreferencesWithCacheOptions(),
+    );
   }
 }

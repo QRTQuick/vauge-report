@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -550,82 +551,6 @@ class _LocalArticlesTab extends StatelessWidget {
   }
 }
 
-class _BackgroundDecor extends StatelessWidget {
-  const _BackgroundDecor();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF050505),
-                theme.colorScheme.surface,
-                const Color(0xFF0A0A0A),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          top: -140,
-          right: -120,
-          child: _BlurCircle(
-            size: 260,
-            color: theme.colorScheme.primary
-                .withValues(alpha: 0.22),
-          ),
-        ),
-        Positioned(
-          top: 200,
-          left: -120,
-          child: _BlurCircle(
-            size: 240,
-            color: theme.colorScheme.secondary
-                .withValues(alpha: 0.16),
-          ),
-        ),
-        Positioned(
-          bottom: -160,
-          right: -80,
-          child: _BlurCircle(
-            size: 280,
-            color: theme.colorScheme.primary
-                .withValues(alpha: 0.16),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _BlurCircle extends StatelessWidget {
-  const _BlurCircle({required this.size, required this.color});
-
-  final double size;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            color,
-            color.withValues(alpha: 0.0),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _BackgroundDecor extends StatelessWidget {
   const _BackgroundDecor();

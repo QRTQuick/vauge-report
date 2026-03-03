@@ -71,7 +71,7 @@ class AppTheme {
         ),
       ),
     ),
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelStyle: GoogleFonts.manrope(
         fontWeight: FontWeight.w600,
         fontSize: 13,
